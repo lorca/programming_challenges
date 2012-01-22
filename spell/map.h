@@ -26,6 +26,6 @@ void print_map(map_t *map, int depth, char *word,
 
 void delete_map(map_t *map);
 
-map_t* create_map(char c);
+map_t* create_map();
 
 void load_map(map_t *map, char *word);

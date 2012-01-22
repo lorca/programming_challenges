@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "dict.h"
 #include "fnv_hash.h"
-
 
 dict_result_t* lookup(dict_t *dict, const char *word) {
     dict_result_t* result;
@@ -43,7 +43,7 @@ dict_result_t* find_map(dict_t *dict, const char *word) {
     return NULL;
 }
 
-void print_map(dict_t *dict, int depth, char *word, void f(char*, void*, void*, void*), void* arg1, void* arg2, void* arg3) {
+void traverse_map(dict_t *dict, int depth, char *word, void f(char*, void*, void*, void*), void* arg1, void* arg2, void* arg3) {
     int i;
     for (i=0; i < DICT_SIZE; ++i) {
         if (dict->table[i].count) {
@@ -56,7 +56,7 @@ void delete_map(dict_t *dict) {
     free(dict);
 }
 
-dict_t* create_map(char c) {
+dict_t* create_map() {
     return malloc(sizeof(dict_t));
 }
 

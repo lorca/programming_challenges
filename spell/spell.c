@@ -1,8 +1,8 @@
 /**
- * A spelling corrector written in C which uses maps instead of hash maps.
+ * A spelling corrector written in C which uses tries.
  *
  * To compile and run do: 
- *   gcc spell.c map.c
+ *   gcc spell.c trie.c
  *   wget http://norvig.com/big.txt
  *   ./a.out speling < big.txt
  *
@@ -17,7 +17,8 @@
 
 #include "map.h"
 
-#define WORD_LEN_MAX 24
+/* Note: Biggest word in big.txt is 18 characters. */
+#define WORD_LEN_MAX 1024
 
 void fatal(char *error) {
     printf("Fatal error %s\n", error);
@@ -131,19 +132,18 @@ void correct(map_t* known_words, char *word) {
        return;
    } 
 
-   edits = create_map('a');
+   edits = create_map();
    calc_edits1(word, edits, load_map);
 
    int max = 0;
-   char max_word[10000];
+   char max_word[WORD_LEN_MAX];
   
-   print_map(edits, 0, "", find_max, known_words, &max, max_word);
+   traverse_map(edits, 0, "", find_max, known_words, &max, max_word);
 
    if (!max) {
-       //print_map(edits, 0, "", calc_edits2, known_words, &max, max_word);
-       edits2 = create_map('a');
-       print_map(edits, 0, "", calc_edits2, edits2, NULL, NULL);
-       print_map(edits2, 0, "", find_max, known_words, &max, max_word);
+       edits2 = create_map();
+       traverse_map(edits, 0, "", calc_edits2, edits2, NULL, NULL);
+       traverse_map(edits2, 0, "", find_max, known_words, &max, max_word);
        delete_map(edits2);
    }
    delete_map(edits);
@@ -152,7 +152,7 @@ void correct(map_t* known_words, char *word) {
 }
 
 int main(int argc, char **argv) {
-   map_t *known_words = create_map('a');
+   map_t *known_words = create_map();
    train(known_words);
    s_known_words = known_words;
 
@@ -160,6 +160,5 @@ int main(int argc, char **argv) {
    correct(known_words, word);
 
    delete_map(known_words);
-
 }
 

@@ -20,34 +20,39 @@ My goals in order of priority were:
  1.) write a spell corrector in C
  2.) use as few dependencies as possible
  3.) no tuning required
- 4.) make it fast as possible
- 5.) make it use as few lines of code as possible while using idiomatic C
- 6.) don't deviate to far from Norvig's original solution
+ 4.) make it about as much memory as the size of big.txt (6.5M).
+ 5.) make it at least twice as fast as python.
+ 6.) keep the code style consistent with Norvig's design.
 
 I wrote a spell corrector program with two different backends:
-a trie and a dict (hash table).  These structures have different
-performance characteristics.  My dict doesn't dynamically allocate itself
-so it's size has to be tuned.  This is true for the glib hash table
-implementation.  Trie's inherently don't require any tuning.  In my testing
-the trie is about twice as slow as a perfectly tuned dict, but it can be
-1000x faster if the dict is tuned to be too small. 
+a trie and a dict (hash table).  I made the dict mainly for comparison sake.
 
-I feel like the trie implementation met all goals except for goal 6. 
-Whereas my dict implementation failed goal #3.
+I failed goal #6. spell.c on its own is 160 lines. This was a naive goal.
 
-Learning about tries was fun, and also I indirectly learned about how
-radix sort works, which can be done as a trie.  In fact my spell program
-could double as a simple string sorting program with very little modification.
+The dict failed goal #3, but the trie achieved it!
+The dict failed mainly having to do with my laziness.
+Though my naive dict implementation worked well when tuned right.
 
-The major downside with tries in my opinion is all the pointers they use up.
-At 8 bytes a pointer it seems costly when all you are pointing to is a char
-plus more pointers. Still the trie implementation uses less than 10M to
-load the dictionary, whereas Norvig's python implementation uses over 100M!
+I found trie's to be very flexible.  One interesting fact is that
+traverse_map in trie.c traverses the map in sorted order in O(N). So
+it'd be nearly trivial to base a simple sort program off trie.c.
 
-One enhancement to reduce memory use further would be to do my own allocator
-and referencing system for each trie node. That would cut down on potential
-waste.  With the dict, an enhancement could be to dynamically resize
-the hash table as it gets bigger. That would make it much more general and
-similar to how I imagine python's dict works.
+Trie's were half the speed of a perfectly tuned dict. Both ran in less
+than one second. By run I  mean loading big.txt into a trie or dict and 
+correcting a single word.  trie.c was about double the speed of python.
+So dict.c was 4x the speed of python. A poorly tuned dict could be
+exceptionally slow since it uses open addressing. 
+
+Interestingly the trie used only about 4M of memory, using less than
+the big.txt file which took up 6M. Python used 100M. and dict varied
+depending on the tuning, though around 10M.
+
+Further Reseearch
+
+While 4M is impressive, I imagine tries could use a lot less memory
+if you could stop them from using all those damn 8-byte pointers.
+Perhaps you could try writing your own allocator and referencing system
+which could grow and shrink as the elements in the trie universe
+changes.  Definitely something fun to think about.
 
 -Steve A

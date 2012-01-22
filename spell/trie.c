@@ -25,7 +25,7 @@ trie_t* find_map(trie_t *trie, const char *word) {
     return NULL;
 }
 
-void print_map(trie_t *trie, int depth, char *word, void f(char*, void*, void*, void*), void* arg1, void* arg2, void* arg3) {
+void traverse_map(trie_t *trie, int depth, char *word, void f(char*, void*, void*, void*), void* arg1, void* arg2, void* arg3) {
     int i, c;
     trie_t *child, **trie_buf;
     char *temp = word;
@@ -50,7 +50,7 @@ void print_map(trie_t *trie, int depth, char *word, void f(char*, void*, void*, 
         for (c=0; c < CHAR_SIZE; c++) {
             if(trie_buf[c]) {
                 child = trie_buf[c];
-                print_map(child, depth+1, word, f, arg1, arg2, arg3); 
+                traverse_map(child, depth+1, word, f, arg1, arg2, arg3); 
             }
         }
         free(trie_buf);
@@ -68,11 +68,15 @@ void delete_map(trie_t *trie) {
     }
 }
 
-trie_t* create_map(char c) {
+trie_t* init_map(char c) {
     trie_t* trie = malloc(sizeof(trie_t));
     trie->c = c;
     trie->count = 0;
     return trie;
+}
+
+trie_t* create_map() {
+    return init_map(' ');
 }
 
 void load_map(trie_t *trie, char *word) {
@@ -81,7 +85,7 @@ void load_map(trie_t *trie, char *word) {
     while (c = *(word++)) {
         for (child=trie->children; child && child->c != c; child=child->next);
         if (!child) {
-            child = create_map(c);
+            child = init_map(c);
             child->next = trie->children;  
             trie->children = child;
         }

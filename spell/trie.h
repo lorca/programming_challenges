@@ -17,13 +17,13 @@ typedef struct trie_t trie_t;
  */
 trie_t* find_map(trie_t *trie, const char *word);
 
-void print_trie(trie_t *trie, int depth, char *word, 
+void traverse_map(trie_t *trie, int depth, char *word, 
    void f(char*, void*, void*, void*),
           void* arg1, void* arg2, void* arg3);
 
 
 void delete_map(trie_t *trie);
 
-trie_t* create_map(char c);
+trie_t* create_map();
 
 void load_map(trie_t *trie, char *word);
