@@ -47,7 +47,7 @@ Interestingly the trie used only about 4M of memory, using less than
 the big.txt file which took up 6M. Python used 100M. and dict varied
 depending on the tuning, though around 10M.
 
-Further Reseearch
+Further Research
 
 While 4M is impressive, I imagine tries could use a lot less memory
 if you could stop them from using all those damn 8-byte pointers.
