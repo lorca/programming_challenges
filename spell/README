@@ -1,0 +1,53 @@
+"How to Write a Spell Corrector" in C
+
+See the original post for python here: http://norvig.com/spell-correct.html
+
+January 25, 2012
+Steve A
+
+I've written a spell corrector in C with two different backends.  
+
+One with a trie structure and one using a dictionary (hash table).
+
+To compile just do:
+
+gcc -o spell_trie spell.c trie.c
+
+gcc -o spell_dict spell.c dict.c fnv_hash.h
+
+My goals in order of priority were:
+
+ 1.) write a spell corrector in C
+ 2.) use as few dependencies as possible
+ 3.) no tuning required
+ 4.) make it fast as possible
+ 5.) make it use as few lines of code as possible while using idiomatic C
+ 6.) don't deviate to far from Norvig's original solution
+
+I wrote a spell corrector program with two different backends:
+a trie and a dict (hash table).  These structures have different
+performance characteristics.  My dict doesn't dynamically allocate itself
+so it's size has to be tuned.  This is true for the glib hash table
+implementation.  Trie's inherently don't require any tuning.  In my testing
+the trie is about twice as slow as a perfectly tuned dict, but it can be
+1000x faster if the dict is tuned to be too small. 
+
+I feel like the trie implementation met all goals except for goal 6. 
+Whereas my dict implementation failed goal #3.
+
+Learning about tries was fun, and also I indirectly learned about how
+radix sort works, which can be done as a trie.  In fact my spell program
+could double as a simple string sorting program with very little modification.
+
+The major downside with tries in my opinion is all the pointers they use up.
+At 8 bytes a pointer it seems costly when all you are pointing to is a char
+plus more pointers. Still the trie implementation uses less than 10M to
+load the dictionary, whereas Norvig's python implementation uses over 100M!
+
+One enhancement to reduce memory use further would be to do my own allocator
+and referencing system for each trie node. That would cut down on potential
+waste.  With the dict, an enhancement could be to dynamically resize
+the hash table as it gets bigger. That would make it much more general and
+similar to how I imagine python's dict works.
+
+-Steve A
