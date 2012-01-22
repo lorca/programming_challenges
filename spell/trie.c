@@ -46,7 +46,7 @@ void traverse_map(trie_t *trie, int depth, char *word, void f(char*, void*, void
         for (child=trie->children; child; child=child->next) {
             trie_buf[child->c] = child;
         }
-        /** sort the tries. */
+        /** sort the tries. unnecessary but fun. */
         for (c=0; c < CHAR_SIZE; c++) {
             if(trie_buf[c]) {
                 child = trie_buf[c];
