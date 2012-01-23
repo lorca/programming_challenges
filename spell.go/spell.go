@@ -16,6 +16,7 @@ import (
     "unicode"
 )
 
+/** regexp is slow, so check pattern [a-z]+ manually. */
 func train() map[string] int {
     var word[1024] byte
     i := 0
