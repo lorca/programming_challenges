@@ -94,18 +94,7 @@ func known_words(nwords map[string] int, words []string) []string {
     return known_words
 }
 
-func correct(nwords map[string] int, word string) string {
-    kwords := known_words(nwords, []string {word})
-    if len(kwords) == 0 {
-        edits1 := calc_edits1(word)
-        kwords = known_words(nwords, edits1)
-        if len(kwords) == 0 {
-            for _,edit1 := range edits1 {
-                edits2 := calc_edits1(edit1)
-                kwords = append(kwords, known_words(nwords, edits2)...)
-            }
-        } 
-    }
+func findmax(nwords map[string] int, kwords []string) string {
     max := 0
     max_word := ""
     for _,kword := range kwords {
@@ -117,15 +106,32 @@ func correct(nwords map[string] int, word string) string {
     return max_word
 }
 
+func correct(nwords map[string] int, word string) string {
+    kwords := known_words(nwords, []string {word})
+    var edits1 []string
+    if len(kwords) == 0 {
+        edits1 = calc_edits1(word)
+        kwords = known_words(nwords, edits1)
+    }
+    if len(kwords) == 0 {
+        for _,edit1 := range edits1 {
+            edits2 := calc_edits1(edit1)
+            kwords = append(kwords, known_words(nwords, edits2)...)
+        }
+    }
+    return findmax(nwords, kwords)
+}
+
+func usage() {
+    fmt.Println("Usage: " + os.Args[0] + " word < big.txt")
+}
+
 func main() {
     if len(os.Args) < 2 { 
-        fmt.Println("Usage: " + os.Args[0] + " word < big.txt")
+        usage()
         return;
     }
-
     nwords := train()
-    
     correction := correct(nwords, os.Args[1])
-
     fmt.Println(correction)
 }
